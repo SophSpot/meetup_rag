@@ -1,8 +1,8 @@
 import streamlit as st
-from langchain.chains import LLMChain
 
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
+from langchain.document_transformers import LongContextReorder
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Chroma
 from langchain.schema import StrOutputParser
@@ -37,7 +37,12 @@ def format_docs(docs):
 
 def ask_question_with_context(question):
     rag_chain = (
-        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        {
+            "context": retriever
+            | LongContextReorder().transform_documents
+            | format_docs,
+            "question": RunnablePassthrough(),
+        }
         | prompt
         | ChatOpenAI(model_name="gpt-3.5-turbo")
         | StrOutputParser()

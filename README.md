@@ -1,0 +1,1 @@
+A simple application made to demonstrate RAG pattern during November meetup.
